@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  XML Training Data
+  Configuration files, data formats, and document structures
+  that the model should learn to understand and generate.
+-->
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     Application Configuration (Spring Boot Style)
+     ═══════════════════════════════════════════════════════════════════════ -->
+
+<application xmlns="http://example.com/app/config"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://example.com/app/config app-config.xsd">
+
+    <metadata>
+        <name>my-application</name>
+        <version>3.2.1</version>
+        <description>Production application with database and caching</description>
+    </metadata>
+
+    <server>
+        <host>0.0.0.0</host>
+        <port>8080</port>
+        <ssl enabled="true">
+            <certificate>/etc/ssl/certs/app.crt</certificate>
+            <private-key>/etc/ssl/private/app.key</private-key>
+            <protocols>TLSv1.2,TLSv1.3</protocols>
+        </ssl>
+        <compression enabled="true">
+            <min-size>2048</min-size>
+            <mime-types>text/html,application/json,text/css,application/javascript</mime-types>
+        </compression>
+    </server>
+
+    <database>
+        <primary>
+            <driver>org.postgresql.Driver</driver>
+            <url>jdbc:postgresql://db-primary:5432/myapp</url>
+            <username>${DB_USER}</username>
+            <password>${DB_PASSWORD}</password>
+            <pool>
+                <min-idle>5</min-idle>
+                <max-active>20</max-active>
+                <max-wait>30000</max-wait>
+                <validation-query>SELECT 1</validation-query>
+            </pool>
+        </primary>
+        <replica>
+            <url>jdbc:postgresql://db-replica:5432/myapp</url>
+            <read-only>true</read-only>
+        </replica>
+    </database>
+
+    <cache>
+        <provider>redis</provider>
+        <redis>
+            <host>redis.internal</host>
+            <port>6379</port>
+            <database>0</database>
+            <password>${REDIS_PASSWORD}</password>
+            <ttl-seconds>3600</ttl-seconds>
+            <max-connections>50</max-connections>
+        </redis>
+        <regions>
+            <region name="users" ttl="1800" max-entries="10000" />
+            <region name="sessions" ttl="86400" max-entries="50000" />
+            <region name="products" ttl="300" max-entries="5000" />
+        </regions>
+    </cache>
+
+    <logging>
+        <level>INFO</level>
+        <appenders>
+            <console>
+                <pattern>[%date{ISO8601}] [%level] [%thread] %logger - %message%n</pattern>
+            </console>
+            <file>
+                <path>/var/log/app/application.log</path>
+                <rolling-policy>
+                    <max-size>100MB</max-size>
+                    <max-history>30</max-history>
+                    <total-size>3GB</total-size>
+                </rolling-policy>
+            </file>
+        </appenders>
+        <loggers>
+            <logger name="com.example.app" level="DEBUG" />
+            <logger name="org.hibernate.SQL" level="WARN" />
+            <logger name="org.springframework" level="INFO" />
+        </loggers>
+    </logging>
+
+    <security>
+        <cors>
+            <allowed-origins>https://app.example.com,https://admin.example.com</allowed-origins>
+            <allowed-methods>GET,POST,PUT,DELETE,OPTIONS</allowed-methods>
+            <allowed-headers>Authorization,Content-Type,X-Request-ID</allowed-headers>
+            <max-age>3600</max-age>
+        </cors>
+        <rate-limiting>
+            <default-limit>100</default-limit>
+            <window-seconds>60</window-seconds>
+            <endpoints>
+                <endpoint path="/api/auth/login" limit="10" window="300" />
+                <endpoint path="/api/search" limit="30" window="60" />
+            </endpoints>
+        </rate-limiting>
+    </security>
+</application>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     Maven POM Example
+     ═══════════════════════════════════════════════════════════════════════ -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.example</groupId>
+    <artifactId>ml-pipeline</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <properties>
+        <java.version>21</java.version>
+        <spring.boot.version>3.2.0</spring.boot.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <version>${spring.boot.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+            <version>${spring.boot.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.7.0</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- Test dependencies -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <version>${spring.boot.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+</project>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     SVG Graphics
+     ═══════════════════════════════════════════════════════════════════════ -->
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="400" height="300">
+    <defs>
+        <linearGradient id="bg-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+        </linearGradient>
+        <filter id="shadow">
+            <feDropShadow dx="2" dy="2" stdDeviation="3" flood-opacity="0.3"/>
+        </filter>
+    </defs>
+
+    <rect width="400" height="300" fill="url(#bg-gradient)" rx="10"/>
+
+    <!-- Neural network visualization -->
+    <g transform="translate(50, 50)" filter="url(#shadow)">
+        <!-- Input layer -->
+        <circle cx="0" cy="0" r="15" fill="#4ecdc4" opacity="0.9"/>
+        <circle cx="0" cy="60" r="15" fill="#4ecdc4" opacity="0.9"/>
+        <circle cx="0" cy="120" r="15" fill="#4ecdc4" opacity="0.9"/>
+        <circle cx="0" cy="180" r="15" fill="#4ecdc4" opacity="0.9"/>
+
+        <!-- Hidden layer -->
+        <circle cx="150" cy="30" r="15" fill="#ff6b6b" opacity="0.9"/>
+        <circle cx="150" cy="90" r="15" fill="#ff6b6b" opacity="0.9"/>
+        <circle cx="150" cy="150" r="15" fill="#ff6b6b" opacity="0.9"/>
+
+        <!-- Output layer -->
+        <circle cx="300" cy="60" r="15" fill="#feca57" opacity="0.9"/>
+        <circle cx="300" cy="120" r="15" fill="#feca57" opacity="0.9"/>
+
+        <!-- Connections (simplified) -->
+        <line x1="15" y1="0" x2="135" y2="30" stroke="white" stroke-opacity="0.3"/>
+        <line x1="15" y1="60" x2="135" y2="30" stroke="white" stroke-opacity="0.3"/>
+        <line x1="15" y1="60" x2="135" y2="90" stroke="white" stroke-opacity="0.3"/>
+        <line x1="165" y1="30" x2="285" y2="60" stroke="white" stroke-opacity="0.3"/>
+        <line x1="165" y1="90" x2="285" y2="60" stroke="white" stroke-opacity="0.3"/>
+        <line x1="165" y1="90" x2="285" y2="120" stroke="white" stroke-opacity="0.3"/>
+        <line x1="165" y1="150" x2="285" y2="120" stroke="white" stroke-opacity="0.3"/>
+    </g>
+</svg>
